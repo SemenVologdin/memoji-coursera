@@ -2,13 +2,18 @@ const $card = document.querySelectorAll('.card');
 const $rows = document.querySelector('.row');
 const $selectedCards = document.querySelectorAll('.front');
 const $cards = document.querySelector('.cards');
+const $button = document.getElementById('btn-modal');
+const $modal = document.querySelector('.modal');
 
 const emogies = ['🐭', '🐹', '🦄', '🐸', '🐵', '🐷', '🐭', '🐹', '🦄', '🐸', '🐵', '🐷'];
-const sortArr = shuffle(emogies);
-const buttons = [];
+
+$button.addEventListener('click', () => {
+  $modal.style.display = 'none';
+});
 
 let firstPic,
   secondPic,
+  count = 0,
   flipped = false;
 
 //Shuffle array for random pictures
@@ -20,10 +25,16 @@ function shuffle(a) {
   return a;
 }
 
-//Add picture in card
-$card.forEach((button, index) => {
-  button.childNodes[3].innerHTML == '' ? (button.childNodes[3].innerHTML = sortArr[index]) : null;
-});
+function start() {
+  flipped = false;
+  const sortArr = shuffle(emogies);
+
+  //Add picture in card
+  $card.forEach((button, index) => {
+    button.childNodes[3].innerHTML == '' ? (button.childNodes[3].innerHTML = sortArr[index]) : null;
+    $card.forEach((card) => card.addEventListener('click', flipCard));
+  });
+}
 
 function unflipCards() {
   firstPic.querySelector('.front').classList.add('wrong');
@@ -42,9 +53,13 @@ function disableCard() {
   secondPic.removeEventListener('click', flipCard);
   firstPic.querySelector('.front').classList.add('right');
   secondPic.querySelector('.front').classList.add('right');
+  count++;
+  if (count == 6) {
+    $modal.style.display = 'flex';
+    $modal.querySelector('h2').innerHTML = 'You WIN!';
+    $modal.querySelector('button').innerHTML = 'Start again!';
+  }
 }
-
-$card.forEach((card) => card.addEventListener('click', flipCard));
 
 function flipCard() {
   this.classList.add('active');
@@ -59,3 +74,5 @@ function flipCard() {
       : unflipCards();
   }
 }
+
+start();
