@@ -2,6 +2,8 @@ const $card = document.querySelectorAll('.card');
 const $selectedCards = document.querySelectorAll('.front');
 const $rows = document.querySelector('.row');
 const $button = document.getElementById('btn-modal');
+const $seconds = document.getElementById('seconds');
+const $minutes = document.getElementById('minutes');
 const $modal = document.querySelector('.modal');
 
 const emogies = ['🐭', '🐹', '🦄', '🐸', '🐵', '🐷', '🐭', '🐹', '🦄', '🐸', '🐵', '🐷'];
@@ -38,8 +40,27 @@ $button.addEventListener('click', () => {
   insertPics();
   start();
 });
+function timer() {
+  let seconds = 60;
+  $minutes.innerHTML = '00';
+  const myTimer = setInterval(() => {
+    $seconds.innerHTML = seconds.toString().length == 1 ? `0${--seconds}` : --seconds;
+    if (seconds == 0) {
+      $minutes.innerHTML = '01';
+      clearInterval(myTimer);
+    }
+  }, 1000);
+}
+
+function end(textTitle, textButton) {
+  $modal.style.display = 'flex';
+  $modal.querySelector('h2').innerHTML = textTitle;
+  $modal.querySelector('button').innerHTML = textButton;
+}
 
 function start() {
+  setTimeout(end.bind(this, 'Time is over :(', 'Start again'), 60000);
+  timer();
   count = 0;
   //Show card for 1 sec
   $card.forEach((card) => {
@@ -68,9 +89,8 @@ function disableCard() {
   firstPic = secondPic = null;
   count++;
   if (count == 6) {
-    $modal.style.display = 'flex';
-    $modal.querySelector('h2').innerHTML = 'You WIN!';
-    $modal.querySelector('button').innerHTML = 'Start again!';
+    end('You WIN!', 'Start again!');
+    clearInterval(myTimer);
   }
 }
 

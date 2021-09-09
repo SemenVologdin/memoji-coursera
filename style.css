@@ -32,10 +32,6 @@ h1 {
 }
 
 .modal__menu {
-  /* margin: calc(50% - 200px) auto;
-  width: 300px;
-  height: 200px;
-   */
   padding: 30px;
   background-color: #fff;
   min-width: 350px;
@@ -138,4 +134,10 @@ h1 {
 
 .active > .front {
   transform: rotateY(360deg);
+}
+
+.timer {
+  text-align: center;
+  font-size: 42px;
+  font-weight: 700;
 }
