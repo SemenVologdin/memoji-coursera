@@ -1,20 +1,17 @@
 const $card = document.querySelectorAll('.card');
-const $rows = document.querySelector('.row');
 const $selectedCards = document.querySelectorAll('.front');
-const $cards = document.querySelector('.cards');
+const $rows = document.querySelector('.row');
 const $button = document.getElementById('btn-modal');
 const $modal = document.querySelector('.modal');
 
 const emogies = ['🐭', '🐹', '🦄', '🐸', '🐵', '🐷', '🐭', '🐹', '🦄', '🐸', '🐵', '🐷'];
 
-$button.addEventListener('click', () => {
-  $modal.style.display = 'none';
-});
-
 let firstPic,
   secondPic,
-  count = 0,
-  flipped = false;
+  count,
+  sortArr,
+  flipped = false,
+  wrong = false;
 
 //Shuffle array for random pictures
 function shuffle(a) {
@@ -25,27 +22,41 @@ function shuffle(a) {
   return a;
 }
 
-function start() {
-  flipped = false;
-  const sortArr = shuffle(emogies);
+//Add picture in card
 
-  //Add picture in card
+function insertPics() {
+  $card.forEach((button) => (button.childNodes[3].innerHTML = ''));
+  sortArr = shuffle(emogies);
   $card.forEach((button, index) => {
     button.childNodes[3].innerHTML == '' ? (button.childNodes[3].innerHTML = sortArr[index]) : null;
-    $card.forEach((card) => card.addEventListener('click', flipCard));
+    button.classList.add('active');
+  });
+}
+
+$button.addEventListener('click', () => {
+  $modal.style.display = 'none';
+  insertPics();
+  start();
+});
+
+function start() {
+  count = 0;
+  //Show card for 1 sec
+  $card.forEach((card) => {
+    card.addEventListener('click', flipCard);
+    card.querySelector('.front').classList.remove('right');
+    card.querySelector('.front').classList.remove('wrong');
+    setTimeout(() => {
+      card.classList.remove('active');
+    }, 1000);
   });
 }
 
 function unflipCards() {
   firstPic.querySelector('.front').classList.add('wrong');
   secondPic.querySelector('.front').classList.add('wrong');
-  setTimeout(() => {
-    firstPic.classList.remove('active');
-    secondPic.classList.remove('active');
-  }, 1000);
-
-  firstPic.querySelector('.front').classList.remove('wrong');
-  secondPic.querySelector('.front').classList.remove('wrong');
+  wrong = true;
+  flipped = false;
 }
 
 function disableCard() {
@@ -53,6 +64,8 @@ function disableCard() {
   secondPic.removeEventListener('click', flipCard);
   firstPic.querySelector('.front').classList.add('right');
   secondPic.querySelector('.front').classList.add('right');
+  flipped = false;
+  firstPic = secondPic = null;
   count++;
   if (count == 6) {
     $modal.style.display = 'flex';
@@ -61,18 +74,30 @@ function disableCard() {
   }
 }
 
+//Listener for click
 function flipCard() {
+  if (wrong) {
+    firstPic.querySelector('.front').classList.remove('wrong');
+    secondPic.querySelector('.front').classList.remove('wrong');
+    firstPic.classList.remove('active');
+    secondPic.classList.remove('active');
+    firstPic = secondPic = null;
+    wrong = false;
+  }
+
   this.classList.add('active');
   if (!flipped) {
     firstPic = this;
-    flipped = true;
+    flipped = !flipped;
   } else {
-    flipped = false;
     secondPic = this;
-    firstPic.querySelector('.front').innerHTML == secondPic.querySelector('.front').innerHTML
-      ? disableCard()
-      : unflipCards();
+    console.log(firstPic, secondPic);
+
+    //if same pictures
+    if (firstPic.querySelector('.front').innerText == secondPic.querySelector('.front').innerText) {
+      disableCard();
+    } else {
+      unflipCards();
+    }
   }
 }
-
-start();
